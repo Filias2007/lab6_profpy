@@ -1,13 +1,18 @@
-from shop.config import get_min_stock_threshold, get_payment_gateway_mode
+import pytest
+from shop.config import load_config
 
-def test_config_min_stock_monkeypatch(monkeypatch):
-    monkeypatch.setenv("MIN_STOCK_THRESHOLD", "15")
-    assert get_min_stock_threshold() == 15
+def test_load_config_env_vars(monkeypatch):
+    monkeypatch.setenv("SHOP_ENV", "production")
+    monkeypatch.setenv("SHOP_DEBUG", "false")
 
-def test_config_min_stock_default(monkeypatch):
-    monkeypatch.delenv("MIN_STOCK_THRESHOLD", raising=False)
-    assert get_min_stock_threshold() == 5
+    cfg = load_config()
+    assert cfg["env"] == "production"
+    assert cfg["debug"] is False
 
-def test_config_payment_mode_monkeypatch(monkeypatch):
-    monkeypatch.setenv("PAYMENT_GATEWAY_MODE", "production")
-    assert get_payment_gateway_mode() == "production"
+def test_load_config_defaults(monkeypatch):
+    monkeypatch.delenv("SHOP_ENV", raising=False)
+    monkeypatch.delenv("SHOP_DEBUG", raising=False)
+
+    cfg = load_config()
+    assert cfg["env"] == "development"
+    assert cfg["debug"] is True

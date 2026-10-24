@@ -1,10 +1,10 @@
 import os
 
-def get_min_stock_threshold() -> int:
-    try:
-        return int(os.getenv("MIN_STOCK_THRESHOLD", "5"))
-    except ValueError:
-        return 5
-
-def get_payment_gateway_mode() -> str:
-    return os.getenv("PAYMENT_GATEWAY_MODE", "sandbox")
+def load_config() -> dict:
+    env = os.environ.get("SHOP_ENV", "development")
+    debug_str = os.environ.get("SHOP_DEBUG", "true").lower()
+    debug = debug_str in ("true", "1", "yes")
+    return {
+        "env": env,
+        "debug": debug,
+    }

@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True)
 class Money:
     amount: float
     currency: str = "UAH"
@@ -9,10 +9,7 @@ class Money:
         if self.amount < 0:
             raise ValueError("Amount cannot be negative")
 
-    def add(self, other: "Money") -> "Money":
-        if self.currency != other.currency:
-            raise ValueError("Currency mismatch")
-        return Money(round(self.amount + other.amount, 2), self.currency)
-
     def __add__(self, other: "Money") -> "Money":
-        return self.add(other)
+        if self.currency != other.currency:
+            raise ValueError("Currencies must match")
+        return Money(round(self.amount + other.amount, 2), self.currency)
