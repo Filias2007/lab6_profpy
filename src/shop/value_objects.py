@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+
 @dataclass(frozen=True)
 class Money:
     amount: float
@@ -11,5 +12,5 @@ class Money:
 
     def __add__(self, other: "Money") -> "Money":
         if self.currency != other.currency:
-            raise ValueError("Currencies must match")
+            raise ValueError("Currency mismatch")
         return Money(round(self.amount + other.amount, 2), self.currency)

@@ -1,5 +1,5 @@
 from shop.models import Product
-from shop.exceptions import InsufficientStockError, PaymentError
+from shop.exceptions import InsufficientStockError
 
 
 class DiscountService:
@@ -16,6 +16,8 @@ class OrderService:
         self.notifier = notifier
 
     def checkout(self, customer_email: str, product: Product, quantity: int) -> str:
+        if quantity <= 0:
+            raise ValueError("Quantity must be positive")
         if product.quantity < quantity:
             raise InsufficientStockError("Not enough stock available")
 

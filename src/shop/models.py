@@ -36,6 +36,9 @@ class Catalog:
     def calculate_total_inventory_value(self) -> float:
         return sum(p.total_stock_value.amount for p in self.products)
 
+    def find_low_stock(self, min_stock: int) -> list[Product]:
+        return [p for p in self.products if p.quantity < min_stock]
+
     def get_most_expensive_product(self) -> Product | None:
         if not self.products:
             return None
