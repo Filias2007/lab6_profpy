@@ -1,45 +1,78 @@
 from dataclasses import dataclass, field
-from shop.value_objects import Money
-from shop.exceptions import ProductValidationError
 
-@dataclass
+
+class ProductValidationError(Exception):
+    pass
+
+
+class InsufficientStockError(Exception):
+    pass
+
+
+class PaymentError(Exception):
+    pass
+
+
+@dataclass(frozen=True, slots=True)
+class Money:
+    amount: float
+    currency: str = "UAH"
+
+    def __post_init__(self) -> None:
+        if self.amount < 0:
+            raise ValueError("Amount cannot be negative")
+
+    def __add__(self, other: "Money") -> "Money":
+        if self.currency != other.currency:
+            raise ValueError("Currency mismatch")
+        return Money(round(self.amount + other.amount, 2), self.currency)
+
+
+@dataclass(frozen=True, slots=True)
 class Product:
     product_id: int
     name: str
     price: Money
-    quantity: int
+    quantity: int = 0
     category: str = "General"
 
     def __post_init__(self) -> None:
         if not self.name or not self.name.strip():
-            raise ProductValidationError("Product name cannot be empty")
+            raise ValueError("Product name cannot be empty")
         if self.quantity < 0:
-            raise ProductValidationError("Quantity cannot be negative")
+            raise ValueError("Quantity cannot be negative")
 
-    @property
-    def total_stock_value(self) -> Money:
-        return Money(round(self.price.amount * self.quantity, 2), self.price.currency)
 
 @dataclass
-class Catalog:
-    products: list[Product] = field(default_factory=list)
+class CartItem:
+    product: Product
+    quantity: int
 
-    def add_product(self, product: Product) -> None:
-        self.products.append(product)
+    def __post_init__(self) -> None:
+        if self.quantity <= 0:
+            raise ValueError("Quantity must be positive")
 
-    def find_by_id(self, product_id: int) -> Product | None:
-        return next((p for p in self.products if p.product_id == product_id), None)
+    @property
+    def total(self) -> Money:
+        return Money(
+            self.product.price.amount * self.quantity,
+            self.product.price.currency,
+        )
 
-    def filter_by_category(self, category: str) -> list[Product]:
-        return [p for p in self.products if p.category.lower() == category.lower()]
 
-    def calculate_total_inventory_value(self) -> float:
-        return sum(p.total_stock_value.amount for p in self.products)
+@dataclass
+class Cart:
+    items: list[CartItem] = field(default_factory=list)
 
-    def find_low_stock(self, min_stock: int) -> list[Product]:
-        return [p for p in self.products if p.quantity < min_stock]
+    def add(self, product: Product, quantity: int = 1) -> None:
+        self.items.append(CartItem(product, quantity))
 
-    def get_most_expensive_product(self) -> Product | None:
-        if not self.products:
-            return None
-        return max(self.products, key=lambda p: p.price.amount)
+    def __len__(self) -> int:
+        return len(self.items)
+
+    def __contains__(self, product_id: int) -> bool:
+        return any(item.product.product_id == product_id for item in self.items)
+
+    @property
+    def total(self) -> Money:
+        return Money(sum(item.total.amount for item in self.items))

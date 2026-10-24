@@ -19,8 +19,7 @@ dev = [
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
-addopts = "-ra -v --strict-markers --cov=shop --cov-branch --cov-report=term-missing --cov-report=html"
-asyncio_mode = "strict"
+addopts = "-ra -v --strict-markers --cov=shop --cov-branch --cov-report=term-missing"
 markers = [
     "integration: integration tests suite",
 ]
@@ -33,6 +32,3 @@ source = ["shop"]
 show_missing = true
 skip_covered = false
 fail_under = 80.0
-exclude_also = [
-    "^\\s*\\.\\.\\.$",
-]

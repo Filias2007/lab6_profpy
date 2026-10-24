@@ -1,23 +1,11 @@
 import csv
 from pathlib import Path
-from shop.models import Product, Catalog
-from shop.value_objects import Money
-from shop.exceptions import ProductValidationError
+from shop.models import Product, Money, ProductValidationError
 
 
 class ProductRepository:
-    def __init__(self, storage_path: Path | None = None) -> None:
-        self.storage_path = storage_path
-        self._catalog = Catalog()
-
-    def add(self, product: Product) -> None:
-        self._catalog.add_product(product)
-
-    def get_all(self) -> list[Product]:
-        return self._catalog.products
-
-    def import_from_csv(self, file_path: Path) -> Catalog:
-        catalog = Catalog()
+    def import_from_csv(self, file_path: Path) -> list[Product]:
+        products = []
         with open(file_path, mode="r", encoding="utf-8") as f:
             reader = csv.DictReader(f)
             for row in reader:
@@ -29,10 +17,7 @@ class ProductRepository:
                         quantity=int(row["quantity"]),
                         category=row.get("category", "General"),
                     )
-                    catalog.add_product(product)
+                    products.append(product)
                 except (KeyError, ValueError) as err:
-                    raise ProductValidationError(
-                        f"Malformed product record: {row}"
-                    ) from err
-        self._catalog = catalog
-        return catalog
+                    raise ProductValidationError("Malformed CSV record") from err
+        return products
