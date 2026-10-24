@@ -4,8 +4,8 @@ from shop.value_objects import Money
 from shop.exceptions import ProductValidationError
 
 def test_product_valid_creation(sample_laptop):
-    assert sample_laptop.name == "Gaming Laptop"
-    assert sample_laptop.total_stock_value.amount == pytest.approx(450000.0)
+    assert sample_laptop.name == "Laptop"
+    assert sample_laptop.total_stock_value.amount == pytest.approx(175000.0)
 
 def test_empty_product_name_raises_custom_exception():
     with pytest.raises(ProductValidationError, match="cannot be empty"):

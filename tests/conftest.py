@@ -1,6 +1,7 @@
 import pytest
-from shop.models import Product
+from shop.models import Product, Catalog
 from shop.value_objects import Money
+
 
 @pytest.fixture
 def product_factory():
@@ -20,10 +21,40 @@ def product_factory():
         )
     return _create_product
 
+
 @pytest.fixture
 def sample_mouse(product_factory):
-    return product_factory(product_id=1, name="Mouse", price=1200.0, quantity=50, category="Peripherals")
+    return product_factory(
+        product_id=1,
+        name="Mouse",
+        price=1200.0,
+        quantity=50,
+        category="Peripherals"
+    )
+
 
 @pytest.fixture
 def sample_laptop(product_factory):
-    return product_factory(product_id=2, name="Laptop", price=35000.0, quantity=5, category="Electronics")
+    return product_factory(
+        product_id=2,
+        name="Laptop",
+        price=35000.0,
+        quantity=5,
+        category="Electronics"
+    )
+
+
+@pytest.fixture
+def filled_catalog(sample_laptop, product_factory):
+    catalog = Catalog()
+    catalog.add_product(sample_laptop)
+    catalog.add_product(
+        product_factory(
+            product_id=3,
+            name="Phone",
+            price=20000.0,
+            quantity=10,
+            category="Electronics"
+        )
+    )
+    return catalog
