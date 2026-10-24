@@ -58,3 +58,30 @@ def filled_catalog(sample_laptop, product_factory):
         )
     )
     return catalog
+
+@pytest.fixture(autouse=True)
+def clean_shop_env(monkeypatch):
+    for name in ("SHOP_ENV", "SHOP_DEBUG", "SHOP_MIN_STOCK"):
+        monkeypatch.delenv(name, raising=False)
+
+
+@pytest.fixture(params=["Electronics", "Peripherals", "Audio"])
+def category(request):
+    return request.param
+
+
+@pytest.fixture(scope="module")
+def products_csv_text():
+    return (
+        "id,name,price,quantity,category\n"
+        "1,Cable,50,1,Accessories\n"
+        "2,Mouse,1200,4,Peripherals\n"
+        "3,Phone,20000,50,Electronics\n"
+    )
+
+
+@pytest.fixture
+def opened_report(tmp_path):
+    report = (tmp_path / "report.txt").open("w", encoding="utf-8")
+    yield report
+    report.close()
