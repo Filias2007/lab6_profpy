@@ -17,7 +17,7 @@ dev = [
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
-addopts = "-ra -v --strict-markers"
+addopts = "-ra -v --strict-markers --cov=shop --cov-branch --cov-report=term-missing"
 markers = [
     "integration: marks tests as integration tests",
 ]
