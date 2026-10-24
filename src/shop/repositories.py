@@ -4,6 +4,7 @@ from shop.models import Product, Catalog
 from shop.value_objects import Money
 from shop.exceptions import ProductValidationError
 
+
 class ProductRepository:
     def __init__(self, storage_path: Path | None = None) -> None:
         self.storage_path = storage_path
@@ -26,10 +27,12 @@ class ProductRepository:
                         name=row["name"],
                         price=Money(float(row["price"])),
                         quantity=int(row["quantity"]),
-                        category=row.get("category", "General")
+                        category=row.get("category", "General"),
                     )
                     catalog.add_product(product)
                 except (KeyError, ValueError) as err:
-                    raise ProductValidationError(f"Malformed product record: {row}") from err
+                    raise ProductValidationError(
+                        f"Malformed product record: {row}"
+                    ) from err
         self._catalog = catalog
         return catalog
