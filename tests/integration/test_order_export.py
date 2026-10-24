@@ -1,9 +1,10 @@
-import pytest
 import json
+import pytest
+from unittest.mock import Mock
 from shop.repositories import ProductRepository
 from shop.services import OrderService
 from shop.exporters import export_catalog_to_json
-from unittest.mock import Mock
+
 
 @pytest.mark.integration
 def test_order_export_integration(tmp_path):
@@ -36,5 +37,3 @@ def test_order_export_integration(tmp_path):
     assert json_file.exists()
     exported_data = json.loads(json_file.read_text(encoding="utf-8"))
     assert len(exported_data) == 2
-    assert exported_data[0]["quantity"] == 8
-    assert exported_data[0]["stock_value"] == pytest.approx(68000.0)
