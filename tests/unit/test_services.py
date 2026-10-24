@@ -3,6 +3,7 @@ from unittest.mock import Mock, AsyncMock
 from shop.services import DiscountService, OrderService, AsyncSupplierService
 from shop.exceptions import PaymentError, InsufficientStockError
 
+
 @pytest.mark.parametrize("percent, expected_price", [
     (0, 100.0),
     (10, 90.0),
@@ -15,11 +16,13 @@ def test_discount_service_parametrize(product_factory, percent, expected_price):
     res = service.apply_percentage_discount(product, percent)
     assert res == pytest.approx(expected_price)
 
+
 def test_invalid_discount_raises_exception(product_factory):
     product = product_factory(price=100.0)
     service = DiscountService()
     with pytest.raises(ValueError, match="between 0 and 100"):
         service.apply_percentage_discount(product, 150.0)
+
 
 def test_checkout_success_mock(sample_mouse):
     mock_gateway = Mock()
@@ -34,6 +37,7 @@ def test_checkout_success_mock(sample_mouse):
     mock_gateway.pay.assert_called_once_with(2400.0)
     mock_notifier.send_notification.assert_called_once_with("customer@test.com", "Order confirmed: PAY-001")
 
+
 def test_checkout_payment_failure_side_effect(sample_laptop):
     mock_gateway = Mock()
     mock_gateway.pay.side_effect = PaymentError("Gateway error")
@@ -46,6 +50,7 @@ def test_checkout_payment_failure_side_effect(sample_laptop):
 
     mock_notifier.send_notification.assert_not_called()
 
+
 def test_checkout_insufficient_stock(sample_laptop):
     mock_gateway = Mock()
     mock_notifier = Mock()
@@ -53,6 +58,7 @@ def test_checkout_insufficient_stock(sample_laptop):
 
     with pytest.raises(InsufficientStockError, match="Not enough stock"):
         order_service.checkout("customer@test.com", sample_laptop, quantity=100)
+
 
 @pytest.mark.asyncio
 async def test_async_supplier_service():
