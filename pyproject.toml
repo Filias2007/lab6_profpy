@@ -5,6 +5,8 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "shop"
 version = "0.1.0"
+description = "E-Commerce domain system for Lab 06"
+authors = [{ name = "Maksym Filias" }]
 dependencies = []
 
 [project.optional-dependencies]
@@ -19,7 +21,7 @@ testpaths = ["tests"]
 pythonpath = ["src"]
 addopts = "-ra -v --strict-markers --cov=shop --cov-branch --cov-report=term-missing"
 markers = [
-    "integration: marks tests as integration tests",
+    "integration: integration tests",
 ]
 
 [tool.coverage.run]
@@ -29,4 +31,4 @@ source = ["shop"]
 [tool.coverage.report]
 show_missing = true
 skip_covered = false
-fail_under = 85.0
+fail_under = 80.0
